@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright: 2024 Hakika Strategy Into Action (Pty) Ltd -->
+<odoo>
+    <data>
+
+        <record id="view_move_form" model="ir.ui.view">
+            <field name="name">account.move.form.inherit.nl_account</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//button[@name='action_post']" position="before">
+                    <field name="ask_approve" invisible="1"/>
+                    <button
+                        name="action_ask_approve"
+                        string="Ask for Approval"
+                        class="oe_highlight"
+                        type="object"
+                        groups="account.group_account_invoice"
+                        invisible="(not hide_post_button) or (not ask_approve) or move_type != 'entry'"
+                    />
+                </xpath>
+
+                <xpath expr="//header" position="after">
+                    <div class="alert alert-info w-100 d-flex align-items-center gap-1" invisible="not ask_approve"  role="alert">
+                        This entry is submitted to ask approval from user which has proper approve access rights.
+                    </div>
+                </xpath>
+
+                <xpath expr="//field[@name='ref']" position="after">
+                    <field name="project_visible" invisible="1"/>
+                    <field name="project_id" invisible="not project_visible"/>
+                    <field name="product_ids" invisible="1"/>
+                    <field name="account_control_ids" invisible="1"/>
+                </xpath>
+
+                <xpath expr="//field[@name='line_ids']//list//field[@name='account_id']" position="replace">
+                    <field name="product_id" domain="[('id', '=', parent.product_ids)]" options="{'no_create':True}"/>
+                    <field name="product_category_id"/>
+                    <field name="account_id" invisible="display_type in ('line_section', 'line_note')" required="display_type not in ('line_section', 'line_note')" domain="[('deprecated', '=', False), ('id', 'in', parent.account_control_ids)]" options="{'no_create':True}"/>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="view_account_move_filter" model="ir.ui.view">
+            <field name="name">account.move.select.inherit.nl_account</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_account_move_filter"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//filter[@name='unposted']" position="after">
+                    <filter string="To Approve" name="to_approve" domain="[('ask_approve', '=', True)]"/>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

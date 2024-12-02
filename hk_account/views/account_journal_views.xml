@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright: 2024 Hakika Strategy Into Action (Pty) Ltd -->
+<odoo>
+    <data>
+
+        <record id="view_account_journal_form" model="ir.ui.view">
+            <field name="name">account.journal.form.inherit.nl_account</field>
+            <field name="model">account.journal</field>
+            <field name="inherit_id" ref="account.view_account_journal_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='country_code']" position="before">
+                    <field name="allowed_company_ids" widget="many2many_tags" options="{'no_create':True}"/>
+                    <field name="mandatory_invoice_attachment"/>
+                </xpath>
+
+                <xpath expr="//field[@name='default_account_id']" position="after">
+                    <field name="default_counter_account_id"/>
+                </xpath>
+
+                <xpath expr="//notebook" position="inside">
+                    <page string="Applicable Products">
+                        <field name="product_ids" nolabel="1">
+                            <list>
+                                <field name="default_code"/>
+                                <field name="name"/>
+                                <field name="product_tag_ids" widget="many2many_tags"/>
+                            </list>
+                        </field>
+                    </page>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>
